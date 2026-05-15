@@ -1,0 +1,777 @@
+:root {
+  /* Pure app ka default text color yaha set hai. */
+  color: #eef5ff;
+
+  /* Page ka base dark background color. */
+  background: #080b12;
+
+  /* App ke liye default font stack. */
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  /* Browser ko fake bold/italic generate karne se rokta hai. */
+  font-synthesis: none;
+
+  /* Text rendering ko smooth aur readable banata hai. */
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  /* Padding aur border ko element width ke andar count karta hai. */
+  box-sizing: border-box;
+}
+
+body {
+  /* Browser ka default margin remove karte hain. */
+  margin: 0;
+
+  /* Very small screens par layout tootne se bachata hai. */
+  min-width: 320px;
+
+  /* Body kam se kam full screen height leti hai. */
+  min-height: 100vh;
+
+  /* Dark overlay ke saath gaming background image set karte hain. */
+  background:
+    linear-gradient(110deg, rgba(8, 11, 18, 0.92), rgba(13, 22, 32, 0.82)),
+    url('/extra/pexels-lulizler-3165335.jpg') center / cover fixed;
+}
+
+button,
+input,
+select,
+textarea {
+  /* Form controls parent font inherit karte hain taki design consistent rahe. */
+  font: inherit;
+}
+
+button {
+  /* Button ka default border remove karte hain. */
+  border: 0;
+
+  /* Button par pointer cursor dikhata hai. */
+  cursor: pointer;
+}
+
+.app-shell {
+  /* App ka max width professional dashboard jaisa rakha gaya hai. */
+  width: min(1440px, 100%);
+
+  /* App ko page ke center me align karta hai. */
+  margin: 0 auto;
+
+  /* Page ke edges se spacing deta hai. */
+  padding: 24px;
+}
+
+.nav {
+  /* Navbar items ko ek row me arrange karta hai. */
+  display: flex;
+
+  /* Items ko vertically center karta hai. */
+  align-items: center;
+
+  /* Brand left aur actions right me chale jaate hain. */
+  justify-content: space-between;
+
+  /* Navbar elements ke beech gap. */
+  gap: 18px;
+
+  /* Navbar ke andar top-bottom spacing. */
+  padding: 14px 0 28px;
+}
+
+.brand,
+.nav-actions,
+.status-pill,
+.search-panel,
+.meta-row,
+.tabs,
+.section-heading,
+.favorite-item {
+  /* Common flex alignment multiple components ke liye reuse ho raha hai. */
+  display: flex;
+  align-items: center;
+}
+
+.brand {
+  /* Logo aur brand text ke beech gap. */
+  gap: 12px;
+}
+
+.brand svg {
+  /* Brand icon ko neon teal color dete hain. */
+  color: #6fffe9;
+}
+
+.brand span {
+  /* Brand name ko block banate hain taki subtitle niche aaye. */
+  display: block;
+
+  /* Brand title ka font size. */
+  font-size: 1.08rem;
+
+  /* Brand title bold dikhne ke liye. */
+  font-weight: 800;
+}
+
+.brand small,
+.muted,
+.hero-card span,
+.game-content p,
+.section-heading p,
+.favorite-item small {
+  /* Secondary text ko muted color dete hain. */
+  color: #9fb0c8;
+}
+
+.nav-actions {
+  /* Navbar action buttons ke beech gap. */
+  gap: 10px;
+
+  /* Small screens par buttons wrap ho sakte hain. */
+  flex-wrap: wrap;
+
+  /* Buttons ko right side align karta hai. */
+  justify-content: flex-end;
+}
+
+.status-pill,
+.ghost-btn {
+  /* Pill aur ghost button ke andar icon-text gap. */
+  gap: 8px;
+
+  /* Minimum touch-friendly height. */
+  min-height: 38px;
+
+  /* Button ke andar spacing. */
+  padding: 8px 12px;
+
+  /* Light border glass style ke liye. */
+  border: 1px solid rgba(159, 176, 200, 0.22);
+
+  /* Rounded corners professional look ke liye. */
+  border-radius: 8px;
+
+  /* Semi-transparent dark background. */
+  background: rgba(12, 18, 30, 0.76);
+
+  /* Button text color. */
+  color: #dfe9f8;
+}
+
+.ghost-btn {
+  /* Ghost button ko inline flex banate hain taki icon center rahe. */
+  display: inline-flex;
+  align-items: center;
+}
+
+.hero {
+  /* Hero section ki minimum height. */
+  min-height: 520px;
+
+  /* Hero me content aur player card ko grid me rakha hai. */
+  display: grid;
+
+  /* Left content flexible hai, right card fixed width ka hai. */
+  grid-template-columns: minmax(0, 1fr) 320px;
+
+  /* Hero content bottom side align hota hai. */
+  align-items: end;
+
+  /* Columns ke beech spacing. */
+  gap: 24px;
+
+  /* Hero ke andar vertical spacing. */
+  padding: 80px 0 44px;
+}
+
+.hero-copy {
+  /* Hero text bahut wide na ho isliye max width set hai. */
+  max-width: 850px;
+}
+
+.eyebrow {
+  /* Small label icon aur text ko row me rakhta hai. */
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  /* Neon accent color. */
+  color: #6fffe9;
+
+  /* Label ko bold banata hai. */
+  font-weight: 800;
+
+  /* Label uppercase gaming UI style ke liye. */
+  text-transform: uppercase;
+
+  /* Compact label font size. */
+  font-size: 0.78rem;
+
+  /* Label me thoda spacing deta hai. */
+  letter-spacing: 0.08em;
+}
+
+h1,
+h2,
+h3,
+p {
+  /* Headings aur paragraph ke top default margin remove karte hain. */
+  margin-top: 0;
+}
+
+h1 {
+  /* Main heading ke niche gap. */
+  margin-bottom: 18px;
+
+  /* Heading ki readable max width. */
+  max-width: 820px;
+
+  /* Responsive font size, mobile se desktop tak scale hota hai. */
+  font-size: clamp(2.5rem, 7vw, 6.5rem);
+
+  /* Hero heading ko tight gaming poster jaisa banata hai. */
+  line-height: 0.95;
+
+  /* Negative spacing avoid karne ke liye 0 rakha hai. */
+  letter-spacing: 0;
+}
+
+.hero p {
+  /* Hero paragraph ko readable width deta hai. */
+  max-width: 720px;
+
+  /* Paragraph ka soft color. */
+  color: #c4d1e3;
+
+  /* Hero paragraph thoda bada dikhata hai. */
+  font-size: 1.08rem;
+}
+
+.search-panel {
+  /* Search controls ke beech gap. */
+  gap: 10px;
+
+  /* Small screens par controls next line me aa sakte hain. */
+  flex-wrap: wrap;
+
+  /* Hero text se search panel ka gap. */
+  margin-top: 28px;
+
+  /* Panel ke andar spacing. */
+  padding: 10px;
+
+  /* Dark glass background. */
+  background: rgba(8, 12, 22, 0.88);
+
+  /* Neon border subtle rakha hai. */
+  border: 1px solid rgba(111, 255, 233, 0.22);
+
+  /* Panel ke corners. */
+  border-radius: 8px;
+}
+
+.search-panel label {
+  /* Search input container ka minimum width. */
+  min-width: min(330px, 100%);
+
+  /* Search input available space le leta hai. */
+  flex: 1;
+
+  /* Icon aur input ko row me align karta hai. */
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  /* Search field ke andar spacing. */
+  padding: 0 12px;
+
+  /* Search field ka dark background. */
+  background: #121a29;
+
+  /* Search input rounded corners. */
+  border-radius: 6px;
+}
+
+input,
+select,
+textarea {
+  /* Saare form controls full width lete hain. */
+  width: 100%;
+
+  /* Input text color. */
+  color: #f6fbff;
+
+  /* Input background. */
+  background: #121a29;
+
+  /* Soft border. */
+  border: 1px solid rgba(159, 176, 200, 0.2);
+
+  /* Form controls rounded corners. */
+  border-radius: 6px;
+
+  /* Browser default focus outline remove hai, custom style simple rakha hai. */
+  outline: 0;
+}
+
+input,
+select {
+  /* Inputs aur selects ki touch-friendly height. */
+  min-height: 46px;
+
+  /* Text ke left-right padding. */
+  padding: 0 12px;
+}
+
+textarea {
+  /* Bio textarea vertically resize ho sakta hai. */
+  resize: vertical;
+
+  /* Textarea ke andar spacing. */
+  padding: 12px;
+}
+
+.search-panel input {
+  /* Search input ka border parent label handle karta hai. */
+  border: 0;
+
+  /* Search input extra padding remove karta hai. */
+  padding: 0;
+}
+
+.search-panel select {
+  /* Search filters ko fixed compact width dete hain. */
+  width: 150px;
+}
+
+.search-panel button,
+.panel button[type='submit'] {
+  /* Primary buttons ki minimum height. */
+  min-height: 46px;
+
+  /* Button content ko center align karta hai. */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  /* Icon aur text ke beech gap. */
+  gap: 8px;
+
+  /* Button horizontal padding. */
+  padding: 0 18px;
+
+  /* Button rounded corners. */
+  border-radius: 6px;
+
+  /* Main action neon color. */
+  background: #6fffe9;
+
+  /* Button text dark rakha hai contrast ke liye. */
+  color: #071017;
+
+  /* Button text bold. */
+  font-weight: 800;
+}
+
+.hero-card,
+.panel,
+.toast {
+  /* Panels, hero card aur toast ka common glass border. */
+  border: 1px solid rgba(159, 176, 200, 0.18);
+
+  /* Semi-transparent dark panel background. */
+  background: rgba(10, 15, 25, 0.86);
+
+  /* Background blur glass effect deta hai. */
+  backdrop-filter: blur(16px);
+
+  /* Corners rounded. */
+  border-radius: 8px;
+}
+
+.hero-card {
+  /* Player card ki minimum height. */
+  min-height: 220px;
+
+  /* Card content ko vertical stack me rakhta hai. */
+  display: flex;
+  flex-direction: column;
+
+  /* Content card ke bottom me align hota hai. */
+  justify-content: flex-end;
+
+  /* Card text ke beech gap. */
+  gap: 10px;
+
+  /* Card ke andar spacing. */
+  padding: 24px;
+
+  /* Subtle inner neon border. */
+  box-shadow: inset 0 0 0 1px rgba(111, 255, 233, 0.08);
+}
+
+.hero-card svg {
+  /* Trophy icon ko gold color dete hain. */
+  color: #ffcf5a;
+}
+
+.hero-card strong {
+  /* Player level text bada dikhata hai. */
+  font-size: 1.45rem;
+}
+
+.toast {
+  /* Toast ke niche spacing. */
+  margin-bottom: 18px;
+
+  /* Toast ke andar spacing. */
+  padding: 12px 16px;
+
+  /* Toast text color. */
+  color: #dffdf8;
+}
+
+.main-grid {
+  /* Main content aur sidebar ko grid layout me rakhta hai. */
+  display: grid;
+
+  /* Left area flexible, right sidebar fixed width. */
+  grid-template-columns: minmax(0, 1fr) 360px;
+
+  /* Main grid columns ke beech gap. */
+  gap: 24px;
+
+  /* Sidebar top se align rahe. */
+  align-items: start;
+}
+
+.section-heading {
+  /* Section title aur count/icon ko opposite sides me rakhta hai. */
+  justify-content: space-between;
+
+  /* Heading elements ke beech gap. */
+  gap: 18px;
+
+  /* Heading ke niche spacing. */
+  margin-bottom: 18px;
+}
+
+.section-heading span {
+  /* Small section label accent color. */
+  color: #6fffe9;
+
+  /* Label font size. */
+  font-size: 0.78rem;
+
+  /* Label uppercase style. */
+  text-transform: uppercase;
+
+  /* Label bold. */
+  font-weight: 800;
+}
+
+.section-heading h2 {
+  /* Heading ka bottom margin remove. */
+  margin-bottom: 0;
+
+  /* Section heading size. */
+  font-size: 1.8rem;
+}
+
+.compact h2 {
+  /* Sidebar panels me heading chhoti rakhi hai. */
+  font-size: 1.25rem;
+}
+
+.game-grid {
+  /* Game cards ko responsive grid me arrange karta hai. */
+  display: grid;
+
+  /* Desktop par 3 columns. */
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  /* Cards ke beech gap. */
+  gap: 16px;
+}
+
+.game-card {
+  /* Game card ki minimum height stable rakhta hai. */
+  min-height: 360px;
+
+  /* Image overflow rounded corners ke bahar na nikle. */
+  overflow: hidden;
+
+  /* Card border. */
+  border: 1px solid rgba(159, 176, 200, 0.18);
+
+  /* Card corners. */
+  border-radius: 8px;
+
+  /* Card dark background. */
+  background: #111827;
+
+  /* Hover animation smooth banata hai. */
+  transition: transform 180ms ease, border-color 180ms ease;
+}
+
+.game-card:hover {
+  /* Hover par card thoda upar uthta hai. */
+  transform: translateY(-4px);
+
+  /* Hover par neon border visible hota hai. */
+  border-color: rgba(111, 255, 233, 0.55);
+}
+
+.game-card img {
+  /* Image card ki full width leti hai. */
+  width: 100%;
+
+  /* Image ka fixed ratio layout shift se bachata hai. */
+  aspect-ratio: 16 / 10;
+
+  /* Image crop hoke card me fit hoti hai. */
+  object-fit: cover;
+
+  /* Inline image gap remove karta hai. */
+  display: block;
+}
+
+.game-content {
+  /* Card content ko small grid stack me rakhta hai. */
+  display: grid;
+
+  /* Content blocks ke beech gap. */
+  gap: 18px;
+
+  /* Card content padding. */
+  padding: 16px;
+}
+
+.game-content h3 {
+  /* Game title ke niche small gap. */
+  margin-bottom: 6px;
+
+  /* Game title ka compact size. */
+  font-size: 1.04rem;
+}
+
+.meta-row {
+  /* Rating left aur favorite button right me rakhta hai. */
+  justify-content: space-between;
+}
+
+.meta-row span {
+  /* Rating icon aur number ko row me rakhta hai. */
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  /* Rating ko gold color. */
+  color: #ffcf5a;
+
+  /* Rating bold. */
+  font-weight: 800;
+}
+
+.icon-btn {
+  /* Icon button square size. */
+  width: 38px;
+  height: 38px;
+
+  /* Icon ko exact center me rakhta hai. */
+  display: grid;
+  place-items: center;
+
+  /* Icon button corners. */
+  border-radius: 6px;
+
+  /* Icon button background. */
+  background: #1a2434;
+
+  /* Default icon color. */
+  color: #d7e4f4;
+}
+
+.icon-btn.liked {
+  /* Favorite active hone par heart pink hota hai. */
+  color: #ff5370;
+}
+
+.side-stack {
+  /* Sidebar panels ko vertical stack me rakhta hai. */
+  display: grid;
+
+  /* Panels ke beech gap. */
+  gap: 16px;
+}
+
+.panel {
+  /* Sidebar panel ke andar spacing. */
+  padding: 18px;
+}
+
+.panel form {
+  /* Panel forms ke fields vertical stack me. */
+  display: grid;
+
+  /* Form fields ke beech gap. */
+  gap: 10px;
+}
+
+.tabs {
+  /* Auth tabs ke beech gap. */
+  gap: 8px;
+
+  /* Tabs ke niche spacing. */
+  margin-bottom: 12px;
+}
+
+.tabs button {
+  /* Dono tab equal width lete hain. */
+  flex: 1;
+
+  /* Tab ki minimum height. */
+  min-height: 40px;
+
+  /* Tab content center align. */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  /* Icon aur text ke beech gap. */
+  gap: 6px;
+
+  /* Tab corners. */
+  border-radius: 6px;
+
+  /* Inactive tab text color. */
+  color: #c9d6e8;
+
+  /* Inactive tab background. */
+  background: #151f2e;
+}
+
+.tabs button.active {
+  /* Active tab ko neon background dete hain. */
+  background: #6fffe9;
+
+  /* Active tab text dark contrast me. */
+  color: #071017;
+
+  /* Active tab text bold. */
+  font-weight: 800;
+}
+
+.favorite-list {
+  /* Favorite games ko vertical list me rakhta hai. */
+  display: grid;
+
+  /* Favorite items ke beech gap. */
+  gap: 10px;
+}
+
+.favorite-item {
+  /* Favorite image aur text ke beech gap. */
+  gap: 10px;
+
+  /* Favorite item ke andar spacing. */
+  padding: 8px;
+
+  /* Favorite item corners. */
+  border-radius: 8px;
+
+  /* Favorite item ka subtle background. */
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.favorite-item img {
+  /* Favorite thumbnail width. */
+  width: 58px;
+
+  /* Favorite thumbnail height. */
+  height: 58px;
+
+  /* Thumbnail corners. */
+  border-radius: 6px;
+
+  /* Thumbnail crop fit. */
+  object-fit: cover;
+}
+
+.favorite-item strong,
+.favorite-item small {
+  /* Favorite title aur date ko block line me dikhata hai. */
+  display: block;
+}
+
+.skeleton {
+  /* Loading card ki height real card jaisi rakhi hai. */
+  min-height: 360px;
+
+  /* Skeleton corners. */
+  border-radius: 8px;
+
+  /* Skeleton shimmer gradient. */
+  background: linear-gradient(100deg, #121a29, #1e2a3d, #121a29);
+
+  /* Gradient ko animate karne ke liye bada background size. */
+  background-size: 200% 100%;
+
+  /* Shimmer animation run hoti hai. */
+  animation: shimmer 1.1s infinite linear;
+}
+
+@keyframes shimmer {
+  to {
+    /* Gradient ko left move karke loading shimmer effect banata hai. */
+    background-position-x: -200%;
+  }
+}
+
+@media (max-width: 1080px) {
+  /* Tablet screens par hero aur main grid single column ho jaate hain. */
+  .hero,
+  .main-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Tablet par game grid 2 columns hoti hai. */
+  .game-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
+  .app-shell {
+    /* Mobile par page padding kam karte hain. */
+    padding: 16px;
+  }
+
+  /* Mobile par navbar aur headings vertical stack me jaate hain. */
+  .nav,
+  .section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .hero {
+    /* Mobile par hero fixed height nahi rakhta. */
+    min-height: auto;
+
+    /* Mobile hero top spacing. */
+    padding-top: 42px;
+  }
+
+  /* Mobile par search controls full width lete hain. */
+  .search-panel,
+  .search-panel select,
+  .search-panel button {
+    width: 100%;
+  }
+
+  .game-grid {
+    /* Mobile par game cards single column me dikhte hain. */
+    grid-template-columns: 1fr;
+  }
+}
