@@ -15,9 +15,10 @@ import {
   Zap
 } from 'lucide-react';
 import './styles.css';
+import fallbackGameImage from '../extra/pexels-lulizler-3165335.jpg';
 
-// Yaha frontend ka API base set hai; Vite proxy is /api ko backend tak bhejta hai.
-const API_BASE = '/api';
+// Yaha frontend ka API base set hai; production me VITE_API_BASE_URL se backend URL de sakte hain.
+const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api';
 
 // Yaha website me dikhne wale genre names rakhe gaye hain.
 const genres = ['Action', 'Adventure', 'RPG', 'Shooter', 'Indie', 'Racing'];
@@ -344,7 +345,7 @@ function App() {
               ? Array.from({ length: 6 }).map((_, index) => <div className="skeleton" key={index} />)
               : games.map((game) => (
                   <article className="game-card" key={game.id}>
-                    <img src={game.background_image || './extra/pexels-lulizler-3165335.jpg'} alt={game.name} />
+                    <img src={game.background_image || fallbackGameImage} alt={game.name} />
                     <div className="game-content">
                       <div>
                         <h3>{game.name}</h3>
@@ -472,7 +473,7 @@ function App() {
               {(user?.favorites || []).length ? (
                 user.favorites.map((game) => (
                   <div className="favorite-item" key={game.id}>
-                    <img src={game.image || './extra/pexels-lulizler-3165335.jpg'} alt={game.name} />
+                    <img src={game.image || fallbackGameImage} alt={game.name} />
                     <div>
                       <strong>{game.name}</strong>
                       <small>{game.released}</small>

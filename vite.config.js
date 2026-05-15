@@ -3,6 +3,9 @@ import { defineConfig } from 'vite';
 
 // Vite config yaha define hota hai.
 export default defineConfig({
+  // GitHub Pages jaise subfolder hosting me assets 404 na ho isliye relative base use karte hain.
+  base: './',
+
   // React plugin JSX aur React fast refresh ko enable karta hai.
   plugins: [react()],
 

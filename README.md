@@ -148,6 +148,8 @@ POST /api/profile/favorites
 - User data is saved locally in `server/data/users.json`.
 - `server/data/` is ignored by Git because it is runtime data.
 - In development, the frontend uses `/api` and Vite proxies requests to `http://localhost:5000`.
+- If you deploy only the frontend on GitHub Pages, `/api` will return 404 because GitHub Pages cannot run the Express backend.
+- For deployment, host the backend on Render, Railway, Vercel Serverless, or another Node host, then set `VITE_API_BASE_URL` to your deployed backend API URL.
 - For a real production app, replace the JSON file storage with a database like MongoDB, PostgreSQL, or MySQL.
 
 ## Author
