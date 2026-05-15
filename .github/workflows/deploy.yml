@@ -1,0 +1,75 @@
+# Ye workflow GitHub Pages par Vite React app deploy karta hai.
+name: Deploy Piyush GameVerse
+
+on:
+  # Main branch par push hote hi deploy run hoga.
+  push:
+    branches:
+      - main
+
+  # GitHub Actions tab se manually deploy run karne ke liye.
+  workflow_dispatch:
+
+# Pages deploy ke liye required permissions.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Ek time par ek hi Pages deploy chalega.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    # Build job Ubuntu runner par chalega.
+    runs-on: ubuntu-latest
+
+    steps:
+      # Repo code checkout karta hai.
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Node.js setup karta hai.
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      # package-lock ke basis par dependencies install karta hai.
+      - name: Install Dependencies
+        run: npm ci
+
+      # Vite production build banata hai.
+      - name: Build
+        run: npm run build
+
+      # GitHub Pages ko configure karta hai.
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      # dist folder ko Pages artifact ke roop me upload karta hai.
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    # Deploy tabhi chalega jab build complete ho jayega.
+    needs: build
+
+    # Pages deployment environment set karta hai.
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    # Deploy job Ubuntu runner par chalega.
+    runs-on: ubuntu-latest
+
+    steps:
+      # Uploaded dist artifact ko GitHub Pages par deploy karta hai.
+      - name: Deploy To GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -17,8 +17,21 @@ import {
 import './styles.css';
 import fallbackGameImage from '../extra/pexels-lulizler-3165335.jpg';
 
-// Yaha frontend ka API base set hai; production me VITE_API_BASE_URL se backend URL de sakte hain.
+// Yaha frontend ka API base set hai; local dev me /api Vite proxy se backend tak jata hai.
 const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api';
+
+// GitHub Pages backend run nahi karta, isliye localhost ya custom API URL par hi backend mode use hota hai.
+const USE_BACKEND_API =
+  Boolean(import.meta.env.VITE_API_BASE_URL) || ['localhost', '127.0.0.1'].includes(window.location.hostname);
+
+// Static mode me browser direct RAWG API call karega, isliye Vite env ya fallback key yaha rakhi hai.
+const RAWG_BROWSER_KEY = import.meta.env.VITE_RAWG_API_KEY || '1bce2fc627e74027bc3143fbe3e0b435';
+
+// GitHub Pages demo auth ke liye users browser localStorage me save honge.
+const STATIC_USERS_KEY = 'gameverse_static_users';
+
+// Static mode me current logged-in user ka email yaha save hota hai.
+const STATIC_SESSION_KEY = 'gameverse_static_session';
 
 // Yaha website me dikhne wale genre names rakhe gaye hain.
 const genres = ['Action', 'Adventure', 'RPG', 'Shooter', 'Indie', 'Racing'];
@@ -32,6 +45,40 @@ const genreSlugs = {
   Indie: 'indie',
   Racing: 'racing'
 };
+
+function readStaticUsers() {
+  // Static users localStorage se read karte hain; data missing ho to empty array return hota hai.
+  return JSON.parse(localStorage.getItem(STATIC_USERS_KEY) || '[]');
+}
+
+function writeStaticUsers(users) {
+  // Static users ko browser storage me save karte hain taki refresh ke baad data rahe.
+  localStorage.setItem(STATIC_USERS_KEY, JSON.stringify(users));
+}
+
+function publicStaticUser(user) {
+  // Static user me password frontend UI ko nahi bhejna hai, isliye remove karte hain.
+  const { password, ...safeUser } = user;
+
+  // Safe user object return karte hain.
+  return safeUser;
+}
+
+function createStaticUser(form) {
+  // Signup form se local demo account create karte hain.
+  return {
+    id: crypto.randomUUID(),
+    name: form.name.trim(),
+    email: form.email.trim().toLowerCase(),
+    password: form.password,
+    favoriteGenre: form.favoriteGenre,
+    bio: 'Ready to discover the next favorite game.',
+    level: 1,
+    xp: 120,
+    favorites: [],
+    createdAt: new Date().toISOString()
+  };
+}
 
 function App() {
   // Token localStorage se uthate hain taki page refresh ke baad bhi login active rahe.
@@ -84,6 +131,12 @@ function App() {
     // Agar token nahi hai to profile fetch karne ki zaroorat nahi.
     if (!token) return;
 
+    // GitHub Pages static mode me profile localStorage se read hoti hai.
+    if (!USE_BACKEND_API) {
+      loadStaticProfile();
+      return;
+    }
+
     // Token milne par backend se latest profile data mangaate hain.
     request('/profile', { token })
       .then(({ user: profile }) => {
@@ -127,6 +180,37 @@ function App() {
     return data;
   }
 
+  function loadStaticProfile() {
+    // Current session email localStorage se nikalte hain.
+    const sessionEmail = localStorage.getItem(STATIC_SESSION_KEY);
+
+    // Agar session missing hai to logout state rakhte hain.
+    if (!sessionEmail) {
+      logout();
+      return;
+    }
+
+    // Static users list se current user find karte hain.
+    const profile = readStaticUsers().find((item) => item.email === sessionEmail);
+
+    // User missing ho to logout kar dete hain.
+    if (!profile) {
+      logout();
+      return;
+    }
+
+    // Password ke bina user state me save karte hain.
+    const safeProfile = publicStaticUser(profile);
+    setUser(safeProfile);
+
+    // Profile form ko saved values se fill karte hain.
+    setProfileForm({
+      name: safeProfile.name,
+      bio: safeProfile.bio,
+      favoriteGenre: safeProfile.favoriteGenre
+    });
+  }
+
   async function fetchGames(search = query, genre = selectedGenre, sort = ordering) {
     // Request start hone par loading on karte hain.
     setLoading(true);
@@ -142,8 +226,16 @@ function App() {
         page_size: '12'
       });
 
-      // Frontend /api/games call karta hai; Vite proxy isse backend tak bhejta hai.
-      const response = await fetch(`${API_BASE}/games?${params}`);
+      // Backend mode me /api/games call hota hai, static mode me RAWG direct call hota hai.
+      const gamesUrl = USE_BACKEND_API
+        ? `${API_BASE}/games?${params}`
+        : `https://api.rawg.io/api/games?${params}&key=${RAWG_BROWSER_KEY}`;
+
+      // Games data chosen URL se fetch karte hain.
+      const response = await fetch(gamesUrl);
+
+      // Agar response ok nahi hai to error throw karte hain.
+      if (!response.ok) throw new Error('Games request failed');
 
       // Games API ka response JSON me read karte hain.
       const data = await response.json();
@@ -152,7 +244,7 @@ function App() {
       setGames(data.results || []);
     } catch {
       // Error aane par user friendly message dikhate hain.
-      setMessage('Games load nahi ho paaye. API server check karein.');
+      setMessage(USE_BACKEND_API ? 'Games load nahi ho paaye. API server check karein.' : 'Games load nahi ho paaye. RAWG key check karein.');
     } finally {
       // Request complete hone ke baad loading off karte hain.
       setLoading(false);
@@ -166,6 +258,12 @@ function App() {
     // Purana message clear karte hain.
     setMessage('');
     try {
+      // GitHub Pages static mode me auth localStorage se handle hota hai.
+      if (!USE_BACKEND_API) {
+        handleStaticAuth();
+        return;
+      }
+
       // authMode ke hisaab se sign in ya sign up endpoint choose hota hai.
       const endpoint = authMode === 'signin' ? '/auth/signin' : '/auth/signup';
 
@@ -196,10 +294,89 @@ function App() {
     }
   }
 
+  function handleStaticAuth() {
+    // Static mode me saare users browser localStorage se read hote hain.
+    const users = readStaticUsers();
+
+    // Email ko lowercase rakhte hain taki login comparison easy ho.
+    const email = authForm.email.trim().toLowerCase();
+
+    // Signup mode me new local account create karte hain.
+    if (authMode === 'signup') {
+      // Required fields missing ho to message dikhate hain.
+      if (!authForm.name || !email || !authForm.password) {
+        setMessage('Name, email aur password required hai.');
+        return;
+      }
+
+      // Password short ho to account create nahi karte.
+      if (authForm.password.length < 6) {
+        setMessage('Password kam se kam 6 characters ka hona chahiye.');
+        return;
+      }
+
+      // Same email already saved ho to duplicate account block karte hain.
+      if (users.some((item) => item.email === email)) {
+        setMessage('Is email ka account already hai.');
+        return;
+      }
+
+      // Naya static user create karke list me add karte hain.
+      const newUser = createStaticUser({ ...authForm, email });
+      writeStaticUsers([newUser, ...users]);
+
+      // Static session browser me save karte hain.
+      localStorage.setItem(STATIC_SESSION_KEY, newUser.email);
+      localStorage.setItem('gameverse_token', `static-${newUser.id}`);
+
+      // User state update karte hain.
+      const safeUser = publicStaticUser(newUser);
+      setToken(`static-${newUser.id}`);
+      setUser(safeUser);
+      setProfileForm({ name: safeUser.name, bio: safeUser.bio, favoriteGenre: safeUser.favoriteGenre });
+      setMessage('GitHub Pages demo account ready.');
+      return;
+    }
+
+    // Signin mode me saved user find karte hain.
+    const existingUser = users.find((item) => item.email === email && item.password === authForm.password);
+
+    // Email/password galat ho to error message dikhate hain.
+    if (!existingUser) {
+      setMessage('Invalid email ya password.');
+      return;
+    }
+
+    // Successful login par static session save karte hain.
+    localStorage.setItem(STATIC_SESSION_KEY, existingUser.email);
+    localStorage.setItem('gameverse_token', `static-${existingUser.id}`);
+
+    // Safe user state me save hota hai.
+    const safeUser = publicStaticUser(existingUser);
+    setToken(`static-${existingUser.id}`);
+    setUser(safeUser);
+    setProfileForm({ name: safeUser.name, bio: safeUser.bio, favoriteGenre: safeUser.favoriteGenre });
+    setMessage('Welcome back, gamer.');
+  }
+
   async function updateProfile(event) {
     // Profile form submit par page refresh rok dete hain.
     event.preventDefault();
     try {
+      // Static mode me profile localStorage users array me update hoti hai.
+      if (!USE_BACKEND_API) {
+        const users = readStaticUsers();
+        const sessionEmail = localStorage.getItem(STATIC_SESSION_KEY);
+        const index = users.findIndex((item) => item.email === sessionEmail);
+        if (index === -1) throw new Error('Profile not found.');
+        users[index] = { ...users[index], ...profileForm };
+        writeStaticUsers(users);
+        const safeUser = publicStaticUser(users[index]);
+        setUser(safeUser);
+        setMessage('Profile updated successfully.');
+        return;
+      }
+
       // Profile update backend me save hota hai aur updated user wapas milta hai.
       const data = await request('/profile', { method: 'PATCH', token, body: profileForm });
 
@@ -222,6 +399,30 @@ function App() {
       return;
     }
     try {
+      // Static mode me favorite localStorage me add/remove hota hai.
+      if (!USE_BACKEND_API) {
+        const users = readStaticUsers();
+        const sessionEmail = localStorage.getItem(STATIC_SESSION_KEY);
+        const index = users.findIndex((item) => item.email === sessionEmail);
+        if (index === -1) throw new Error('Profile not found.');
+        const favorite = {
+          id: game.id,
+          name: game.name,
+          rating: game.rating || 0,
+          image: game.background_image || '',
+          released: game.released || 'Unknown'
+        };
+        const exists = users[index].favorites.some((item) => item.id === favorite.id);
+        users[index].favorites = exists
+          ? users[index].favorites.filter((item) => item.id !== favorite.id)
+          : [favorite, ...users[index].favorites].slice(0, 12);
+        users[index].xp += exists ? -10 : 10;
+        users[index].level = Math.max(1, Math.floor(users[index].xp / 100));
+        writeStaticUsers(users);
+        setUser(publicStaticUser(users[index]));
+        return;
+      }
+
       // Backend ko selected game bhejte hain, backend add ya remove decide karta hai.
       const data = await request('/profile/favorites', { method: 'POST', token, body: { game } });
 
@@ -236,6 +437,9 @@ function App() {
   function logout() {
     // Browser storage se token remove karte hain.
     localStorage.removeItem('gameverse_token');
+
+    // Static mode ka session bhi remove karte hain.
+    localStorage.removeItem(STATIC_SESSION_KEY);
 
     // Token state empty karte hain.
     setToken('');

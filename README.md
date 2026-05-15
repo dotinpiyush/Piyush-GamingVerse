@@ -85,6 +85,29 @@ Backend API:
 http://localhost:5000
 ```
 
+## GitHub Pages Deployment
+
+This project now supports GitHub Pages static hosting.
+
+GitHub Pages cannot run the Express backend, so the live Pages version uses:
+
+- RAWG API directly from the browser
+- Browser `localStorage` for demo sign up, sign in, profile, favorites, XP, and levels
+- GitHub Actions to build and publish the `dist` folder
+
+After pushing to GitHub:
+
+1. Open your repository on GitHub.
+2. Go to `Settings > Pages`.
+3. Set source to `GitHub Actions`.
+4. Wait for the deploy workflow to finish.
+
+Live URL format:
+
+```text
+https://dotinpiyush.github.io/Piyush-GamingVerse/
+```
+
 ## Build
 
 Create a production build:
@@ -148,7 +171,7 @@ POST /api/profile/favorites
 - User data is saved locally in `server/data/users.json`.
 - `server/data/` is ignored by Git because it is runtime data.
 - In development, the frontend uses `/api` and Vite proxies requests to `http://localhost:5000`.
-- If you deploy only the frontend on GitHub Pages, `/api` will return 404 because GitHub Pages cannot run the Express backend.
+- On GitHub Pages, the frontend switches to static mode because `/api` cannot run there.
 - For deployment, host the backend on Render, Railway, Vercel Serverless, or another Node host, then set `VITE_API_BASE_URL` to your deployed backend API URL.
 - For a real production app, replace the JSON file storage with a database like MongoDB, PostgreSQL, or MySQL.
 
