@@ -226,28 +226,53 @@ function App() {
         page_size: '12'
       });
 
-      // Backend mode me /api/games call hota hai, static mode me RAWG direct call hota hai.
-      const gamesUrl = USE_BACKEND_API
-        ? `${API_BASE}/games?${params}`
-        : `https://api.rawg.io/api/games?${params}&key=${RAWG_BROWSER_KEY}`;
+      // Backend mode ke liye local API URL banate hain.
+      const backendGamesUrl = `${API_BASE}/games?${params}`;
 
-      // Games data chosen URL se fetch karte hain.
-      const response = await fetch(gamesUrl);
+      // Static fallback ke liye direct RAWG API URL banate hain.
+      const rawgGamesUrl = `https://api.rawg.io/api/games?${params}&key=${RAWG_BROWSER_KEY}`;
 
-      // Agar response ok nahi hai to error throw karte hain.
-      if (!response.ok) throw new Error('Games request failed');
-
-      // Games API ka response JSON me read karte hain.
-      const data = await response.json();
+      // Pehle backend try karte hain, fail ho to RAWG direct try karte hain.
+      const data = USE_BACKEND_API
+        ? await fetchGamesWithFallback(backendGamesUrl, rawgGamesUrl)
+        : await fetchGamesFromUrl(rawgGamesUrl);
 
       // Results array ko games state me save karte hain.
       setGames(data.results || []);
     } catch {
       // Error aane par user friendly message dikhate hain.
-      setMessage(USE_BACKEND_API ? 'Games load nahi ho paaye. API server check karein.' : 'Games load nahi ho paaye. RAWG key check karein.');
+      setGames([]);
+      setMessage('Games load nahi ho paaye. Internet ya RAWG API key check karein.');
     } finally {
       // Request complete hone ke baad loading off karte hain.
       setLoading(false);
+    }
+  }
+
+  async function fetchGamesFromUrl(url) {
+    // Diye gaye URL se games API request bhejte hain.
+    const response = await fetch(url);
+
+    // Agar request fail ho to fallback/catch ko error bhejte hain.
+    if (!response.ok) throw new Error('Games request failed');
+
+    // Successful response ko JSON me convert karte hain.
+    return response.json();
+  }
+
+  async function fetchGamesWithFallback(backendUrl, rawgUrl) {
+    try {
+      // Local backend available ho to pehle wahi use karte hain.
+      return await fetchGamesFromUrl(backendUrl);
+    } catch {
+      // Backend off ya /api 404 ho to direct RAWG se games load karte hain.
+      const data = await fetchGamesFromUrl(rawgUrl);
+
+      // User ko batate hain ki backend fallback use hua hai.
+      setMessage('Backend offline tha, direct RAWG se games load ho gaye.');
+
+      // Direct RAWG ka data return karte hain.
+      return data;
     }
   }
 
